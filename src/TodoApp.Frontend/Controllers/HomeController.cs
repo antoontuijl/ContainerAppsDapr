@@ -19,6 +19,7 @@ namespace TodoApp.Frontend.Controllers
         const string key = "counter";
 
         private readonly ILogger<HomeController> _logger;
+        private static List<string> logs = new List<string>();
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -44,6 +45,25 @@ namespace TodoApp.Frontend.Controllers
             ViewBag.Todos = JsonConvert.DeserializeObject<List<Todo>>(text);
 
             return View();
+        }
+
+        public IActionResult Liveness()
+        {
+            _logger.LogInformation($"{DateTime.UtcNow} -- Liveness {logs.Count}");
+            if (logs.Count <= 10)
+                return Ok();
+            else
+                return BadRequest();
+        }
+        public IActionResult Readiness()
+        {
+            _logger.LogInformation($"{DateTime.UtcNow} -- Readiness {logs.Count}");
+            return Ok();
+        }
+        public IActionResult Startup()
+        {
+            _logger.LogInformation($"{DateTime.UtcNow} -- Startup {logs.Count}");
+            return Ok();
         }
 
         public IActionResult Privacy()

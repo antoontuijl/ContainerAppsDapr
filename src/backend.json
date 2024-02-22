@@ -1,0 +1,91 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "containerAppName": {
+            "defaultValue": "todo-back",
+            "type": "string"
+        },
+        "managedEnvironmentName": {
+            "defaultValue": "cne-dpr",
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.App/containerApps",
+            "apiVersion": "2022-03-01",
+            "name": "[parameters('containerAppName')]",
+            "location": "West Europe",
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironmentName'))]",
+                "configuration": {
+                    "activeRevisionsMode": "Multiple",
+                    "dapr": {
+                        "enabled": true,
+                        "appId": "[parameters('containerAppName')]",
+                        "appPort": 80
+                      },
+                    "ingress": {
+                        "external": false,
+                        "targetPort": 80,
+                        "transport": "auto",
+                        "traffic": [
+                            {
+                                "weight": 100,
+                                "latestRevision": true
+                            }
+                        ],
+                        "allowInsecure": false
+                    }
+                },
+                "template": {
+                    "containers": [
+                        {
+                            "image": "antoontuijl/todoappbackend:latest",
+                            "env":[
+                                {
+                                    "name": "ASPNETCORE_ENVIRONMENT",
+                                    "value": "Development"
+                                }
+                            ],
+                            "name": "[parameters('containerAppName')]",
+                            "probes":[
+                                {
+                                    "type": "Liveness",
+                                    "httpGet": {
+                                        "path":"/todos/liveness",
+                                        "port":80
+                                    },
+                                    "initialDelaySeconds": 10,
+                                    "periodSeconds": 60
+                                },
+                                {
+                                    "type": "Readiness",
+                                    "httpGet": {
+                                        "path":"/todos/readiness",
+                                        "port":80
+                                    },                        
+                                    "initialDelaySeconds": 10,
+                                    "periodSeconds": 60
+                                }
+                            ],
+                            "resources": {
+                                "cpu": 0.5,
+                                "memory": "1Gi"
+                            }
+                        }
+                    ],
+                    "scale": {
+                        "minReplicas": 1,
+                        "maxReplicas": 5
+                    }
+                }
+            }
+        }
+    ]
+}

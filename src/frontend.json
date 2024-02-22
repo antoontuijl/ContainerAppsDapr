@@ -1,0 +1,98 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "containerAppName": {
+            "defaultValue": "todo-front",
+            "type": "string"
+        },
+        "managedEnvironmentName": {
+            "defaultValue": "cne-dpr",
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.App/containerApps",
+            "apiVersion": "2022-03-01",
+            "name": "[parameters('containerAppName')]",
+            "location": "West Europe",
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('managedEnvironmentName'))]",
+                "configuration": {
+                    "activeRevisionsMode": "Multiple",
+                    "dapr": {
+                        "enabled": true,
+                        "appId": "[parameters('containerAppName')]",
+                        "appPort": 80
+                      },
+                    "ingress": {
+                        "external": true,
+                        "targetPort": 80,
+                        "transport": "auto",
+                        "traffic": [
+                            {
+                                "weight": 100,
+                                "latestRevision": true
+                            }
+                        ],
+                        "allowInsecure": false
+                    }
+                },
+                "template": {
+                    "containers": [
+                        {
+                            "image": "antoontuijl/todoappfrontend:latest",
+                            "env":[
+                                {
+                                    "name": "ASPNETCORE_ENVIRONMENT",
+                                    "value": "Development"
+                                }
+                            ],
+                            "name": "[parameters('containerAppName')]",
+                            "probes":[
+                                {
+                                    "type": "Liveness",
+                                    "httpGet": {
+                                        "path":"/home/liveness",
+                                        "port":80
+                                    },
+                                    "initialDelaySeconds": 3,
+                                    "periodSeconds": 2
+                                },
+                                {
+                                    "type": "Readiness",
+                                    "httpGet": {
+                                        "path":"/home/readiness",
+                                        "port":80
+                                    },
+                                    "initialDelaySeconds": 3,
+                                    "periodSeconds": 3
+                                },
+                                {
+                                    "type": "startup",
+                                    "httpGet": {
+                                        "path":"/home/startup",
+                                        "port":80
+                                    }
+                                }
+                            ],
+                            "resources": {
+                                "cpu": 0.5,
+                                "memory": "1Gi"
+                            }
+                        }
+                    ],
+                    "scale": {
+                        "minReplicas": 0,
+                        "maxReplicas": 5
+                    }
+                }
+            }
+        }
+    ]
+}

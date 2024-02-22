@@ -39,6 +39,14 @@ docker push antoontuijl/todoappbackend
 docker build -t antoontuijl/todoappfrontend -f 'TodoApp.Frontend\Dockerfile' .
 docker push antoontuijl/todoappfrontend
 
+# deploy the backend
+az deployment group create --resource-group $grp `
+                           --template-file 'backend.json'
+
+# deploy the frontend
+az deployment group create --resource-group $grp `
+                           --template-file 'frontend.json'
+
 # creating the backend
 az containerapp create `
   --name todo-back `
