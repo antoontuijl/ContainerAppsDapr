@@ -39,11 +39,11 @@ docker push antoontuijl/todoappbackend
 docker build -t antoontuijl/todoappfrontend -f 'TodoApp.Frontend\Dockerfile' .
 docker push antoontuijl/todoappfrontend
 
-# deploy the backend
+# creating the backend via ARM
 az deployment group create --resource-group $grp `
                            --template-file 'backend.json'
 
-# deploy the frontend
+# creating the frontend via ARM
 az deployment group create --resource-group $grp `
                            --template-file 'frontend.json'
 
@@ -53,13 +53,13 @@ az containerapp create `
   --resource-group $grp `
   --environment $environment `
   --image antoontuijl/todoappbackend:latest `
-  --target-port 80 `
+  --target-port 8080 `
   --ingress 'internal' `
   --min-replicas 1 `
   --max-replicas 5 `
   --enable-dapr `
   --env-vars ASPNETCORE_ENVIRONMENT="Development" `
-  --dapr-app-port 80 `
+  --dapr-app-port 8080 `
   --dapr-app-id todo-back
 
 # creating the frontend
@@ -68,13 +68,13 @@ az containerapp create `
   --resource-group $grp `
   --environment $environment `
   --image antoontuijl/todoappfrontend:latest `
-  --target-port 80 `
+  --target-port 8080 `
   --ingress 'external' `
   --min-replicas 0 `
   --max-replicas 5 `
   --enable-dapr `
   --env-vars ASPNETCORE_ENVIRONMENT="Development" `
-  --dapr-app-port 80 `
+  --dapr-app-port 8080 `
   --dapr-app-id todo-front
 
 

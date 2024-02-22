@@ -28,11 +28,11 @@
                     "dapr": {
                         "enabled": true,
                         "appId": "[parameters('containerAppName')]",
-                        "appPort": 80
+                        "appPort": 8080
                       },
                     "ingress": {
-                        "external": false,
-                        "targetPort": 80,
+                        "external": true,
+                        "targetPort": 8080,
                         "transport": "auto",
                         "traffic": [
                             {
@@ -59,7 +59,7 @@
                                     "type": "Liveness",
                                     "httpGet": {
                                         "path":"/todos/liveness",
-                                        "port":80
+                                        "port":8080
                                     },
                                     "initialDelaySeconds": 10,
                                     "periodSeconds": 60
@@ -68,7 +68,7 @@
                                     "type": "Readiness",
                                     "httpGet": {
                                         "path":"/todos/readiness",
-                                        "port":80
+                                        "port":8080
                                     },                        
                                     "initialDelaySeconds": 10,
                                     "periodSeconds": 60
