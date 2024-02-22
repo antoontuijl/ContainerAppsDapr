@@ -2,11 +2,11 @@ componentType: state.azure.blobstorage
 version: v1
 metadata:
 - name: accountName
-  value: daprcontainerappatl
+  value: STORAGE_NAME
 - name: accountKey
   secretRef: account-key
 - name: containerName
   value: mystuff
 secrets:
 - name: account-key
-  value: "68bswAYtiQWoMqVcC6PxCIABkxE1y6ivo0Yd035dRHixC43OrIqZPgxUeaftpGfmJwUdCU7qgf8M+ASt78mgjw=="
+  value: "STORAGE_ACCOUNT_KEY"
