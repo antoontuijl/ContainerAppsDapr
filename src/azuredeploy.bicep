@@ -4,7 +4,7 @@ param uniqueSeed string = '${subscription().subscriptionId}-${resourceGroup().na
 param uniqueSuffix string = uniqueString(uniqueSeed)
 param storageAccountName string = 'storage${replace(uniqueSuffix, '-', '')}'
 param blobContainerName string = 'daprsidecar'
-param managedIdentityName string = 'nodeapp-identity'
+param managedIdentityName string = 'todoapp-identity'
 var logAnalyticsWorkspaceName = 'logs-${environment_name}'
 var appInsightsName = 'appins-${environment_name}'
 
