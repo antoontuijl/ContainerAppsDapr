@@ -19,7 +19,7 @@ param frontendServiceName string = 'todo-front'
 param applicationInsightsDashboardName string = ''
 param applicationInsightsName string = ''
 param containerAppsEnvironmentName string = ''
-param containerRegistryName string = ''
+param containerRegistryName string = 'todoappacr'
 param logAnalyticsName string = ''
 param resourceGroupName string = ''
 param keyVaultName string = ''
@@ -91,7 +91,7 @@ module backend './app/api.bicep' = {
   }
 }
 
-// Frontend backend
+// Frontend
 module frontend './app/api.bicep' = {
   name: 'frontend'
   scope: rg

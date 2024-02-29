@@ -47,6 +47,21 @@ az deployment group create --resource-group $grp `
 az deployment group create --resource-group $grp `
                            --template-file 'frontend.json'
 
+# create container registry
+az acr create --resource-group $grp --name todoappacr --sku Basic
+# login into container registry
+az acr login --name todoappacr 
+# push image to container registry
+docker tag antoontuijl/todoappbackend todoappacr.azurecr.io/todoappbackend:v1
+docker push todoappacr.azurecr.io/todoappbackend:v1
+# Remove
+#docker rmi todoappacr.azurecr.io/todoappbackend:v1
+# List
+az acr repository list --name todoappacr.azurecr.io --output table
+# Run container image in ACR
+docker run -p 8080:80 todoappacr.azurecr.io/todoappbackend:v1
+
+
 # creating the backend
 az containerapp create `
   --name todo-back `
